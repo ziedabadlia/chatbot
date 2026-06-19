@@ -1,0 +1,140 @@
+{
+  "greeting": "Hey there! 🎬 I'm CineBot, your personal movie recommender. What kind of movies are you in the mood for today?",
+  "hard_fallback": "Hmm, it seems we're going in circles! Let's start fresh. 🎬 What kind of movie are you in the mood for?",
+  "soft_fallbacks": [
+    "I'm not sure I caught that — could you rephrase?",
+    "Could you say that differently? I want to help!",
+    "I didn't quite get that. Maybe try describing the genre or mood?"
+  ],
+  "intents": [
+    {
+      "tag": "affirmative",
+      "keywords": [
+        "yes",
+        "yeah",
+        "sure",
+        "yep",
+        "absolutely",
+        "definitely",
+        "of course",
+        "why not"
+      ],
+      "responses": [
+        "Great taste! Here are some action-comedies you'd love: 'The Nice Guys', 'Bad Boys', and 'Rush Hour'.",
+        "Perfect! Then try '21 Jump Street' or 'The Other Guys' — hilarious action from start to finish!",
+        "Awesome! 'Guardians of the Galaxy' blends action and comedy perfectly. You'd love it!"
+      ],
+      "follow_up_questions": [
+        "Would you prefer older classics or recent releases?",
+        "Do you have a favorite actor you'd like to see?",
+        "Should I recommend something on Netflix or a theatrical release?"
+      ]
+    },
+    {
+      "tag": "negative",
+      "keywords": [
+        "no",
+        "nope",
+        "not really",
+        "nah",
+        "don't think so",
+        "negative"
+      ],
+      "responses": [
+        "No problem! Pure action it is. Try 'John Wick' — no jokes, just incredible action.",
+        "Got it! 'Extraction' or 'Fury' would be perfect for serious action fans.",
+        "Understood! 'The Dark Knight' is a serious action masterpiece then."
+      ],
+      "follow_up_questions": [
+        "Do you prefer lone-hero stories or team-based action?",
+        "Are you into modern action or classic 80s/90s films?",
+        "Would you like something based on a true story?"
+      ]
+    },
+    {
+      "tag": "romance",
+      "keywords": ["romance", "love", "romantic", "relationship", "date"],
+      "responses": [
+        "'La La Land' is a beautiful romantic musical — highly recommended!",
+        "Try 'Before Sunrise' for a deeply moving romance story.",
+        "'Crazy, Stupid, Love' is a fun and heartfelt romantic comedy."
+      ],
+      "follow_up_questions": [
+        "Do you prefer happy endings or bittersweet romances?",
+        "Are you into modern romance or period romance films?",
+        "Would you like something funny or more emotionally deep?"
+      ]
+    },
+    {
+      "tag": "scifi",
+      "keywords": [
+        "sci-fi",
+        "science fiction",
+        "space",
+        "future",
+        "alien",
+        "robot",
+        "dystopia"
+      ],
+      "responses": [
+        "'Interstellar' is a breathtaking sci-fi epic about space and time.",
+        "Try 'Arrival' — a thoughtful, intelligent sci-fi film.",
+        "'Blade Runner 2049' is visually stunning with a deep story."
+      ],
+      "follow_up_questions": [
+        "Do you prefer hard sci-fi (realistic science) or space opera?",
+        "Are you into dystopian futures or utopian visions?",
+        "Would you like action-heavy sci-fi or more philosophical stories?"
+      ]
+    },
+    {
+      "tag": "drama",
+      "keywords": ["drama", "emotional", "sad", "deep", "moving", "serious"],
+      "responses": [
+        "'The Shawshank Redemption' is one of the greatest dramas ever made.",
+        "Try '12 Years a Slave' — powerful and deeply moving.",
+        "'Marriage Story' is an emotional drama about relationships falling apart."
+      ],
+      "follow_up_questions": [
+        "Do you prefer character-driven dramas or plot-driven ones?",
+        "Are you okay with emotionally heavy films or prefer lighter dramas?",
+        "Would you like a drama based on true events?"
+      ]
+    },
+    {
+      "tag": "animated",
+      "keywords": [
+        "animated",
+        "animation",
+        "cartoon",
+        "pixar",
+        "disney",
+        "anime"
+      ],
+      "responses": [
+        "'Spider-Man: Into the Spider-Verse' is a groundbreaking animated film!",
+        "Try 'Spirited Away' by Studio Ghibli — absolutely magical.",
+        "'The Lion King' (1994) is a timeless animated classic."
+      ],
+      "follow_up_questions": [
+        "Are you into Western animation or Japanese anime?",
+        "Do you prefer family-friendly films or more adult-oriented animation?",
+        "Would you like something recent or a classic animated film?"
+      ]
+    },
+    {
+      "tag": "rating",
+      "keywords": ["best", "top", "rated", "popular", "award", "oscar"],
+      "responses": [
+        "Some of the highest-rated films ever include 'The Godfather', 'Schindler's List', and 'Parasite'.",
+        "Oscar winners like 'Everything Everywhere All at Once' are always worth watching!",
+        "For critically acclaimed films, check out 'Parasite' — it won Best Picture and is incredible."
+      ],
+      "follow_up_questions": [
+        "Would you prefer award-winning dramas or award-winning comedies?",
+        "Are you interested in international films or English-language only?",
+        "Do you enjoy documentaries as well as fiction films?"
+      ]
+    }
+  ]
+}
