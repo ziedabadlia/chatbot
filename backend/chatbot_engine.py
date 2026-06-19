@@ -1,86 +1,94 @@
+import json
 import os
-import requests
+import random
 from datetime import datetime
-
-GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
-API_URL = "https://models.inference.ai.azure.com/chat/completions"
-MODEL = "gpt-4o-mini"
-
-SYSTEM_PROMPT = """
-You are CineBot, a chatbot that recommends movies.
-Only talk about movies. If the user asks about something else, bring the conversation back to movies.
-Keep your answers short, 2 or 3 sentences.
-Always recommend a specific movie by name.
-Ask the user follow up questions to understand what they want.
-If you dont understand the user, ask them to say it differently.
-Never recommend the same movie twice.
-"""
 
 class ChatbotEngine:
 
     def __init__(self):
-        self.conversation_history = []
-        self.fail_count = 0
+        base = os.path.dirname(__file__)
+        file = open(os.path.join(base, "intents.json"), "r")
+        self.data = json.load(file)
+        file.close()
+
+        self.history = []
+        self.failed_attempts = 0
         self.MAX_FAILS = 3
+        self.used_responses = set()
+        self.used_questions = set()
 
     def greet(self):
-        greeting_text = "Hey! I'm CineBot 🎬 What kind of movies are you in the mood for?"
-        return self.make_message("bot", greeting_text)
+        text = self.data["greeting"]
+        return self.make_message("bot", text)
 
     def respond(self, user_input):
-        self.conversation_history.append({
-            "role": "user",
-            "content": user_input
-        })
+        user_text = user_input.lower().strip()
+        self.history.append(self.make_message("user", user_input))
 
-        try:
-            reply_text = self.call_api()
-            self.fail_count = 0
-        except Exception as e:
-            print("api error:", e)
-            self.fail_count += 1
-            if self.fail_count >= self.MAX_FAILS:
-                self.fail_count = 0
-                self.conversation_history = []
-                reply_text = "Sorry something went wrong too many times. Let's start over! What kind of movies do you like?"
-            else:
-                reply_text = "Sorry i didn't understand that. Can you say it differently?"
+        if self.failed_attempts >= self.MAX_FAILS:
+            self.failed_attempts = 0
+            self.used_responses = set()
+            self.used_questions = set()
+            msg = self.make_message("bot", self.data["hard_fallback"])
+            self.history.append(msg)
+            return msg
 
-        self.conversation_history.append({
-            "role": "assistant",
-            "content": reply_text
-        })
+        matched_intent = self.find_intent(user_text)
 
-        return self.make_message("bot", reply_text)
+        if matched_intent:
+            self.failed_attempts = 0
+            reply = self.pick_response(matched_intent)
+            question = self.pick_question(matched_intent)
+            if question:
+                reply = reply + " " + question
+            msg = self.make_message("bot", reply)
+        else:
+            self.failed_attempts += 1
+            soft = random.choice(self.data["soft_fallbacks"])
+            msg = self.make_message("bot", soft)
 
-    def call_api(self):
-        headers = {
-            "Authorization": "Bearer " + GITHUB_TOKEN,
-            "Content-Type": "application/json"
-        }
+        self.history.append(msg)
+        return msg
 
-        messages_to_send = [{"role": "system", "content": SYSTEM_PROMPT}]
-        for msg in self.conversation_history:
-            messages_to_send.append(msg)
+    def find_intent(self, text):
+        for intent in self.data["intents"]:
+            for keyword in intent["keywords"]:
+                if keyword in text:
+                    return intent
+        return None
 
-        request_body = {
-            "model": MODEL,
-            "messages": messages_to_send,
-            "max_tokens": 150,
-            "temperature": 0.7
-        }
+    def pick_response(self, intent):
+        all_responses = intent["responses"]
+        available = []
+        for r in all_responses:
+            if r not in self.used_responses:
+                available.append(r)
 
-        response = requests.post(API_URL, headers=headers, json=request_body, timeout=10)
-        response.raise_for_status()
+        if len(available) == 0:
+            available = all_responses
 
-        result = response.json()
-        ai_reply = result["choices"][0]["message"]["content"]
-        return ai_reply.strip()
+        choice = random.choice(available)
+        self.used_responses.add(choice)
+        return choice
+
+    def pick_question(self, intent):
+        all_questions = intent.get("follow_up_questions", [])
+        available = []
+        for q in all_questions:
+            if q not in self.used_questions:
+                available.append(q)
+
+        if len(available) == 0:
+            return None
+
+        question = random.choice(available)
+        self.used_questions.add(question)
+        return question
 
     def make_message(self, sender, text):
-        message = {
+        msg = {
             "sender": sender,
             "text": text,
             "timestamp": datetime.now().strftime("%H:%M")
         }
-        return message
+        return msg
