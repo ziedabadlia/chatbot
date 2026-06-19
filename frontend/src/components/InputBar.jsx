@@ -1,25 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-export default function InputBar({ onSend, disabled }) {
-  const [text, setText] = useState('');
+function InputBar({ onSend, disabled }) {
+  const [text, setText] = useState("");
 
   function handleSend() {
-    if (!text.trim()) return;
+    if (text.trim() === "") return;
     onSend(text.trim());
-    setText('');
+    setText("");
+  }
+
+  function handleKeyDown(e) {
+    if (e.key === "Enter") {
+      handleSend();
+    }
   }
 
   return (
-    <div className="input-bar">
+    <div className='input-bar'>
       <input
-        type="text"
-        placeholder={disabled ? 'Connecting...' : 'Ask me about movies...'}
+        type='text'
+        placeholder={disabled ? "Connecting..." : "Ask me about movies..."}
         value={text}
-        onChange={e => setText(e.target.value)}
-        onKeyDown={e => e.key === 'Enter' && handleSend()}
+        onChange={(e) => setText(e.target.value)}
+        onKeyDown={handleKeyDown}
         disabled={disabled}
       />
-      <button className="btn-send" onClick={handleSend} disabled={disabled}>➤</button>
+      <button className='btn-send' onClick={handleSend} disabled={disabled}>
+        ➤
+      </button>
     </div>
   );
 }
+
+export default InputBar;

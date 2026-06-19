@@ -1,72 +1,100 @@
-import React, { useState, useEffect, useRef } from 'react';
-import ChatWindow from './ChatWindow';
-import InputBar from './InputBar';
+import React, { useState, useEffect, useRef } from "react";
+import ChatWindow from "./ChatWindow";
+import InputBar from "./InputBar";
 
-const WS_URL = 'ws://127.0.0.1:5000/chat';
+const SERVER_URL = "ws://127.0.0.1:5000/chat";
 
-export default function App() {
+function App() {
   const [messages, setMessages] = useState([]);
-  const [connected, setConnected] = useState(false);
-  const [typing, setTyping] = useState(false);
-  const wsRef = useRef(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [botIsTyping, setBotIsTyping] = useState(false);
+  const websocket = useRef(null);
 
-  useEffect(() => { connect(); return () => wsRef.current?.close(); }, []);
-
-  function connect() {
-    const ws = new WebSocket(WS_URL);
-    wsRef.current = ws;
-    ws.onopen = () => setConnected(true);
-    ws.onmessage = (e) => {
-      const msg = JSON.parse(e.data);
-      setTyping(false);
-      setMessages(prev => [...prev, msg]);
+  useEffect(() => {
+    connectToServer();
+    return () => {
+      if (websocket.current) websocket.current.close();
     };
-    ws.onclose = () => setConnected(false);
+  }, []);
+
+  function connectToServer() {
+    const ws = new WebSocket(SERVER_URL);
+    websocket.current = ws;
+
+    ws.onopen = function () {
+      setIsConnected(true);
+    };
+    ws.onmessage = function (event) {
+      const msg = JSON.parse(event.data);
+      setBotIsTyping(false);
+      setMessages((prev) => [...prev, msg]);
+    };
+    ws.onclose = function () {
+      setIsConnected(false);
+    };
+    ws.onerror = function (err) {
+      console.log("error:", err);
+    };
   }
 
   function sendMessage(text) {
-    if (!text.trim() || !wsRef.current) return;
-    const userMsg = { sender: 'user', text, timestamp: now() };
-    setMessages(prev => [...prev, userMsg]);
-    setTyping(true);
-    wsRef.current.send(JSON.stringify({ message: text }));
+    if (text === "" || websocket.current === null) return;
+
+    const now = new Date();
+    const timeString = now.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    const userMessage = { sender: "user", text: text, timestamp: timeString };
+    setMessages((prev) => [...prev, userMessage]);
+    setBotIsTyping(true);
+    websocket.current.send(JSON.stringify({ message: text }));
   }
 
-  function handleReset() {
-    wsRef.current?.close();
+  function resetChat() {
+    if (websocket.current) websocket.current.close();
     setMessages([]);
-    setTyping(false);
-    setTimeout(connect, 200);
+    setBotIsTyping(false);
+    setTimeout(connectToServer, 200);
   }
 
-  function handleExport() {
-    const blob = new Blob([JSON.stringify(messages, null, 2)], { type: 'application/json' });
+  function exportChat() {
+    const dataStr = JSON.stringify(messages, null, 2);
+    const blob = new Blob([dataStr], { type: "application/json" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `chat-export-${Date.now()}.json`;
-    a.click();
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "chat-export.json";
+    link.click();
     URL.revokeObjectURL(url);
   }
 
-  function now() {
-    return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  }
-
   return (
-    <div className="chat-wrapper">
-      <div className="chat-header">
+    <div className='chat-wrapper'>
+      <div className='chat-header'>
         <h5>🎬 CineBot</h5>
-        <div className="d-flex gap-2 align-items-center">
-          <span style={{ fontSize: '0.75rem', color: connected ? '#4caf50' : '#f44336' }}>
-            {connected ? '● Online' : '● Offline'}
+        <div className='d-flex gap-2 align-items-center'>
+          <span
+            style={{
+              fontSize: "0.75rem",
+              color: isConnected ? "#4caf50" : "#f44336",
+            }}
+          >
+            {isConnected ? "● Online" : "● Offline"}
           </span>
-          <button className="btn-action" onClick={handleExport}>⬇ Export</button>
-          <button className="btn-action" onClick={handleReset}>↺ Reset</button>
+          <button className='btn-action' onClick={exportChat}>
+            ⬇ Export
+          </button>
+          <button className='btn-action' onClick={resetChat}>
+            ↺ Reset
+          </button>
         </div>
       </div>
-      <ChatWindow messages={messages} typing={typing} />
-      <InputBar onSend={sendMessage} disabled={!connected} />
+      <ChatWindow messages={messages} typing={botIsTyping} />
+      <InputBar onSend={sendMessage} disabled={!isConnected} />
     </div>
   );
 }
+
+export default App;
