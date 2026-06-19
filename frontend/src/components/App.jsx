@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import ChatWindow from "./ChatWindow";
 import InputBar from "./InputBar";
+import LandingPage from "./LandingPage";
 
 const SERVER_URL = "ws://127.0.0.1:5000/chat";
 
@@ -8,6 +9,8 @@ function App() {
   const [messages, setMessages] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
   const [botIsTyping, setBotIsTyping] = useState(false);
+  const [showLanding, setShowLanding] = useState(true);
+
   const websocket = useRef(null);
 
   useEffect(() => {
@@ -70,10 +73,19 @@ function App() {
     URL.revokeObjectURL(url);
   }
 
+  if (showLanding) {
+    return <LandingPage onEnter={() => setShowLanding(false)} />;
+  }
+
   return (
     <div className='chat-wrapper'>
       <div className='chat-header'>
-        <h5>🎬 CineBot</h5>
+        <div className='d-flex align-items-center gap-2'>
+          <button className='btn-action' onClick={() => setShowLanding(true)}>
+            ← Back
+          </button>
+          <h5 style={{ margin: 0 }}>🎬 CineBot</h5>
+        </div>
         <div className='d-flex gap-2 align-items-center'>
           <span
             style={{
