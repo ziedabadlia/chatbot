@@ -73,7 +73,12 @@ function App() {
   return (
     <div className='chat-wrapper'>
       <div className='chat-header'>
-        <h5>🎬 CineBot</h5>
+        <div className='d-flex align-items-center gap-2'>
+          <button className='btn-action' onClick={() => setShowLanding(true)}>
+            ← Back
+          </button>
+          <h5 style={{ margin: 0 }}>🎬 CineBot</h5>
+        </div>
         <div className='d-flex gap-2 align-items-center'>
           <span
             style={{
