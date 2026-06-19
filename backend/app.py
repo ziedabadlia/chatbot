@@ -3,6 +3,8 @@ from flask_sock import Sock
 from flask_cors import CORS
 from chatbot_engine import ChatbotEngine
 import json
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
