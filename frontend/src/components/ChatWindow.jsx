@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import MessageBubble from "./MessageBubble";
 
-function ChatWindow({ messages, typing }) {
+const ChatWindow = ({ messages, typing }) => {
   const bottomRef = useRef(null);
 
   useEffect(() => {
@@ -28,6 +28,6 @@ function ChatWindow({ messages, typing }) {
       <div ref={bottomRef} />
     </div>
   );
-}
+};
 
 export default ChatWindow;

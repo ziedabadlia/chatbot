@@ -1,6 +1,6 @@
 import React from "react";
 
-function LandingPage({ onEnter }) {
+const LandingPage = ({ onEnter }) => {
   return (
     <div
       style={{
@@ -196,6 +196,6 @@ function LandingPage({ onEnter }) {
       </div>
     </div>
   );
-}
+};
 
 export default LandingPage;

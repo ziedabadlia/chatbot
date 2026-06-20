@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import ChatWindow from "./ChatWindow";
 import InputBar from "./InputBar";
+import LandingPage from "./LandingPage";
 
 const SERVER_URL = "ws://127.0.0.1:5000/chat";
 
-function App() {
+const App = () => {
   const [messages, setMessages] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
   const [botIsTyping, setBotIsTyping] = useState(false);
+  const [showLanding, setShowLanding] = useState(true);
   const websocket = useRef(null);
 
   useEffect(() => {
@@ -17,27 +19,27 @@ function App() {
     };
   }, []);
 
-  function connectToServer() {
+  const connectToServer = () => {
     const ws = new WebSocket(SERVER_URL);
     websocket.current = ws;
 
-    ws.onopen = function () {
+    ws.onopen = () => {
       setIsConnected(true);
     };
-    ws.onmessage = function (event) {
+    ws.onmessage = (event) => {
       const msg = JSON.parse(event.data);
       setBotIsTyping(false);
       setMessages((prev) => [...prev, msg]);
     };
-    ws.onclose = function () {
+    ws.onclose = () => {
       setIsConnected(false);
     };
-    ws.onerror = function (err) {
+    ws.onerror = (err) => {
       console.log("error:", err);
     };
-  }
+  };
 
-  function sendMessage(text) {
+  const sendMessage = (text) => {
     if (text === "" || websocket.current === null) return;
 
     const now = new Date();
@@ -50,16 +52,16 @@ function App() {
     setMessages((prev) => [...prev, userMessage]);
     setBotIsTyping(true);
     websocket.current.send(JSON.stringify({ message: text }));
-  }
+  };
 
-  function resetChat() {
+  const resetChat = () => {
     if (websocket.current) websocket.current.close();
     setMessages([]);
     setBotIsTyping(false);
     setTimeout(connectToServer, 200);
-  }
+  };
 
-  function exportChat() {
+  const exportChat = () => {
     const dataStr = JSON.stringify(messages, null, 2);
     const blob = new Blob([dataStr], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -68,6 +70,10 @@ function App() {
     link.download = "chat-export.json";
     link.click();
     URL.revokeObjectURL(url);
+  };
+
+  if (showLanding) {
+    return <LandingPage onEnter={() => setShowLanding(false)} />;
   }
 
   return (
@@ -100,6 +106,6 @@ function App() {
       <InputBar onSend={sendMessage} disabled={!isConnected} />
     </div>
   );
-}
+};
 
 export default App;
