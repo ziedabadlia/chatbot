@@ -1,6 +1,6 @@
 import React from "react";
 
-function MessageBubble({ message }) {
+const MessageBubble = ({ message }) => {
   const sender = message.sender;
   const text = message.text;
   const timestamp = message.timestamp;
@@ -29,6 +29,6 @@ function MessageBubble({ message }) {
       </div>
     </div>
   );
-}
+};
 
 export default MessageBubble;

@@ -1,19 +1,19 @@
 import React, { useState } from "react";
 
-function InputBar({ onSend, disabled }) {
+const InputBar = ({ onSend, disabled }) => {
   const [text, setText] = useState("");
 
-  function handleSend() {
+  const handleSend = () => {
     if (text.trim() === "") return;
     onSend(text.trim());
     setText("");
-  }
+  };
 
-  function handleKeyDown(e) {
+  const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       handleSend();
     }
-  }
+  };
 
   return (
     <div className='input-bar'>
@@ -30,6 +30,6 @@ function InputBar({ onSend, disabled }) {
       </button>
     </div>
   );
-}
+};
 
 export default InputBar;
